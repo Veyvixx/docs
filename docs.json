@@ -3,11 +3,19 @@
   "theme": "mint",
   "name": "Nana",
   "colors": {
-    "primary": "#A38F8F",
-    "light": "#F7EFEF",
-    "dark": "#726060"
+    "primary": "#C4909E",
+    "light": "#F9EFF2",
+    "dark": "#8C5A6A"
   },
   "favicon": "/favicon.svg",
+  "font": {
+    "headings": {
+      "family": "Playfair Display"
+    },
+    "body": {
+      "family": "DM Sans"
+    }
+  },
   "navigation": {
     "tabs": [
       {
