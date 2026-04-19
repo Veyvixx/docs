@@ -7,7 +7,7 @@
     "light": "#F9EFF2",
     "dark": "#8C5A6A"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "font": {
     "headings": {
       "family": "Playfair Display"
