@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Replit internal files
+.local/
+.replit
+replit.nix
+attached_assets/
+AGENTS.md
+
+# Canvas / mockup sandbox (local preview tool, not part of the docs)
+artifacts/
+
+# Build outputs
+.next/
+dist/
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
