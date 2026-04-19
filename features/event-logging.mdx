@@ -1,0 +1,77 @@
+---
+title: "Event Logging"
+description: "Automatically log every significant server event to a dedicated channel."
+---
+
+Nana's event logger tracks what's happening in your server in real time and posts detailed embeds to a log channel you configure. No manual effort required after setup.
+
+## Setup
+
+```
+/set log channel <channel>
+```
+
+Point Nana to a text channel and it will start posting event logs immediately.
+
+To disable logging:
+
+```
+/set log disable
+```
+
+## Logged Events
+
+### Messages
+
+| Event | What's logged |
+|---|---|
+| Message deleted | Author, channel, message content, attachments |
+| Message edited | Author, channel, before and after content, jump link |
+| Bulk message delete | Channel, total count, authors affected |
+
+### Members
+
+| Event | What's logged |
+|---|---|
+| Member joined | Username, account age, join position |
+| Member left | Username, time in server, roles held |
+| Member banned | Username and ID |
+| Member unbanned | Username and ID |
+| Member updated | Nickname changes, role additions/removals, timeout applied/removed, boost status |
+
+### Voice
+
+| Event | What's logged |
+|---|---|
+| Joined voice | User and channel |
+| Left voice | User and channel |
+| Moved channels | User, from channel, to channel |
+| Voice state changed | Mute, deafen, streaming, camera changes |
+
+### Channels
+
+| Event | What's logged |
+|---|---|
+| Channel created | Name, type, category |
+| Channel deleted | Name, type, category |
+| Channel updated | Name, topic, slowmode, NSFW, category, bitrate, user limit, permission changes |
+
+### Roles
+
+| Event | What's logged |
+|---|---|
+| Role created | Name, color, hoist, mentionable |
+| Role deleted | Name, color |
+| Role updated | Name, color, hoist, mentionable, position, permission changes |
+
+### Server
+
+| Event | What's logged |
+|---|---|
+| Server updated | Name, icon, banner, splash, description, verification level, content filter, AFK/system channel changes |
+| Emojis updated | Emojis added and removed |
+| Stickers updated | Stickers added and removed |
+
+<Tip>
+  Keep your log channel private — visible only to staff — so the constant activity doesn't clutter the server for regular members.
+</Tip>

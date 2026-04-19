@@ -1,0 +1,78 @@
+---
+title: "Premium Activation"
+description: "Learn how to activate your premium benefits on a server and manage your activation slot."
+---
+
+Premium works like a slot — you activate it on one server at a time. Think of it like a Discord Nitro boost: you own the subscription, and you choose where to apply it.
+
+## Activating Premium
+
+```
+/activate premium [server_id]
+```
+
+If you run this inside the server you want to activate, you can leave `server_id` blank. Otherwise, provide the server's ID.
+
+- Your activation lasts **2 weeks** from the activation date.
+- You can only have **one active server** at a time.
+
+<Steps>
+  <Step title="Make sure you have a premium membership">
+    Check your status with `/premium`. If you don't have premium, head to [Patreon](https://patreon.com/NanaBotDis).
+  </Step>
+  <Step title="Join the server you want to activate">
+    You must be a member of the server to activate premium there.
+  </Step>
+  <Step title="Run the command">
+    ```
+    /activate premium
+    ```
+    Or with a server ID:
+    ```
+    /activate premium 1234567890
+    ```
+  </Step>
+  <Step title="Confirmation">
+    Nana will confirm the activation and tell you when it expires.
+  </Step>
+</Steps>
+
+## Switching Servers
+
+You can move your activation to a different server, subject to a **1-week cooldown**.
+
+```
+/activation switch <server_id>
+```
+
+<Warning>
+  If you switch before the cooldown is up, Nana will tell you exactly when you can switch next.
+</Warning>
+
+## Checking Your Activation
+
+```
+/activation status
+```
+
+Shows you:
+- Which server your premium is currently active on
+- When the activation expires
+- When you're next eligible to switch
+
+## FAQs
+
+<AccordionGroup>
+  <Accordion title="What happens when my activation expires?">
+    The server loses its premium perks — custom palettes, higher limits, and inventory access — until you reactivate.
+  </Accordion>
+  <Accordion title="Can I activate on multiple servers?">
+    No. Premium activates one server at a time. You can switch with a 1-week cooldown.
+  </Accordion>
+  <Accordion title="Do I lose inventory items if I switch servers?">
+    No — your personal inventory (embeds, autoresponders, buttons) is tied to your account, not the server. It stays safe.
+  </Accordion>
+  <Accordion title="What if I cancel my Patreon?">
+    Your activation will remain until it expires, after which premium perks are removed from the server.
+  </Accordion>
+</AccordionGroup>

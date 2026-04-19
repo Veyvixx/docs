@@ -1,0 +1,91 @@
+{
+  "prefix": ",",
+  "developer_ids": [1311692010067066911],
+  "colors": {
+    "primary":   15919850,
+    "secondary": 13220024,
+    "accent":    16248815,
+    "success":   15129820,
+    "error":      7495776,
+    "warning":   12034979,
+    "dark":       9205880,
+    "muted":     10719119,
+    "soft":      14207690
+  },
+  "emojis": {
+    "success":  "<:confirm:1492280894067576942>",
+    "error":    "<:decline:1492280895577788437>",
+    "warning":  "<:warning:1493581312865468470>",
+    "ping":     "<:heart:1492272494122369045>",
+    "dot":      ";",
+    "arrow":    "<:arrow:1492280892775731231>",
+    "enabled":  "<:enabled:1492569457917427752>",
+    "disabled": "<:disabled:1492569456101167176>"
+  },
+  "premium": {
+    "support_server": "https://discord.gg/BQcm3ptaxX",
+    "patreon_url":    "https://patreon.com/nanabot",
+    "free_server_embeds": 1,
+    "emojis": {
+      "heart":       "<:smallHeart:1492729905266298980>",
+      "tulip":       "<:tulip:1492728449339621496>",
+      "butterflies": "<a:butterflies:1492728344951652473>",
+      "pinkyHeart":  "<a:pinkyHeart:1492728404229886002>",
+      "arrow":       "<:arrow:1492280892775731231>"
+    },
+    "tiers": {
+      "1": {
+        "name": "Nana's Heart",
+        "emoji": "<a:pinkyHeart:1492728404229886002>",
+        "price": 3,
+        "server_embeds": 3,
+        "inventory_embeds": 3,
+        "autoresponders": 10,
+        "buttons": 3,
+        "ar_inventory": 5
+      },
+      "2": {
+        "name": "Nana's Tulip",
+        "emoji": "<:tulip:1492728449339621496>",
+        "price": 10,
+        "server_embeds": -1,
+        "inventory_embeds": -1,
+        "autoresponders": 25,
+        "buttons": 15,
+        "ar_inventory": 15
+      },
+      "3": {
+        "name": "Nana's Butterflies",
+        "emoji": "<a:butterflies:1492728344951652473>",
+        "price": 20,
+        "server_embeds": -1,
+        "inventory_embeds": -1,
+        "autoresponders": -1,
+        "buttons": -1,
+        "ar_inventory": -1
+      }
+    }
+  },
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "file": "bot.log"
+  },
+  "cooldowns": {
+    "default":    3,
+    "moderation": 5,
+    "purge":      10
+  },
+  "antinuke": {
+    "enabled": true,
+    "thresholds": {
+      "ban":            3,
+      "kick":           3,
+      "channel_delete": 3,
+      "role_delete":    3,
+      "webhook_create": 5
+    },
+    "window_seconds": 10,
+    "punishment": "ban"
+  }
+}

@@ -1,0 +1,169 @@
+---
+title: "Template Variables"
+description: "Dynamic variables you can use in greet/leave/boost messages, embed builders, and autoresponders."
+---
+
+Variables let you insert dynamic content into messages and embeds. Wrap any variable in curly braces: `{variable}`.
+
+**Example:**
+```
+Welcome {user.mention} to **{server}**! You are our {server.count}th member.
+```
+
+---
+
+## User Variables
+
+| Variable | Description |
+|---|---|
+| `{user}` | The user's username |
+| `{user.mention}` | Mentions the user (`@username`) |
+| `{user.name}` | Username without discriminator |
+| `{user.id}` | User's Discord ID |
+| `{user.tag}` | Full tag (`username#0000`) |
+| `{user.created}` | Account creation date |
+| `{user.joined}` | Date the user joined the server |
+| `{user.nickname}` | Server nickname |
+| `{user.displayname}` | Display name (nickname if set, otherwise username) |
+| `{user.toprole}` | The user's highest role name |
+| `{user.toprole.mention}` | Mentions the user's highest role |
+| `{user.toprole.color}` | Color hex of the user's highest role |
+| `{user.rolecount}` | Number of roles the user has |
+| `{user.roles}` | List of the user's roles |
+| `{user.status}` | Online / idle / dnd / offline |
+| `{user.color}` | The user's display color |
+| `{user.badges}` | The user's Discord badges |
+| `{user.createdago}` | Relative time since account creation |
+| `{user.createdfull}` | Full formatted account creation date |
+| `{user.joinedago}` | Relative time since joining |
+| `{user.joinedfull}` | Full formatted join date |
+| `{user.joinposition}` | The user's join position (e.g. 42nd member) |
+| `{user.boostsince}` | When the user started boosting |
+| `{user.boosting}` | Whether the user is boosting (true/false) |
+| `{user.activity}` | Current activity/game |
+| `{user.customstatus}` | Custom status text |
+| `{user.timeout}` | Timeout expiry timestamp, if any |
+
+---
+
+## Server Variables
+
+| Variable | Description |
+|---|---|
+| `{server}` | Server name |
+| `{server.name}` | Server name |
+| `{server.id}` | Server ID |
+| `{server.count}` | Total member count |
+| `{server.owner}` | Server owner's username |
+| `{server.level}` | Boost tier level |
+| `{server.boosts}` | Total boost count |
+| `{server.boosttier}` | Boost tier (0–3) |
+| `{server.boostgoal}` | Number of boosts needed for next tier |
+| `{server.boostprogress}` | Current progress toward boost tier |
+| `{server.boostbar}` | Visual progress bar for boosts |
+| `{server.description}` | Server description |
+| `{server.channels}` | Total channel count |
+| `{server.textchannels}` | Text channel count |
+| `{server.voicechannels}` | Voice channel count |
+| `{server.categories}` | Category count |
+| `{server.roles}` | Role count |
+| `{server.emojis}` | Emoji count |
+| `{server.stickers}` | Sticker count |
+| `{server.created}` | Server creation date |
+| `{server.createdfull}` | Full formatted creation date |
+| `{server.vanity}` | Vanity URL if the server has one |
+| `{server.humans}` | Human member count |
+| `{server.bots}` | Bot count |
+| `{server.online}` | Online member count |
+| `{server.idle}` | Idle member count |
+| `{server.dnd}` | Do Not Disturb member count |
+| `{server.offline}` | Offline member count |
+| `{server.verification}` | Verification level |
+| `{server.tier}` | Premium subscription tier |
+| `{server.afkchannel}` | AFK channel name |
+| `{server.afktimeout}` | AFK timeout in minutes |
+| `{server.ruleschannel}` | Rules channel mention |
+| `{server.systemchannel}` | System channel mention |
+| `{server.nsfw}` | NSFW filter status |
+| `{server.locale}` | Server language/locale |
+
+---
+
+## Channel Variables
+
+| Variable | Description |
+|---|---|
+| `{channel}` | Channel name |
+| `{channel.mention}` | Mentions the channel |
+| `{channel.name}` | Channel name without `#` |
+| `{channel.id}` | Channel ID |
+| `{channel.topic}` | Channel topic |
+| `{channel.created}` | Channel creation date |
+
+---
+
+## Date & Time
+
+| Variable | Description |
+|---|---|
+| `{date}` | Today's date |
+| `{time}` | Current time |
+| `{ordinal}` | Ordinal member number (e.g. `42nd`) |
+| `{timestamp}` | Unix timestamp |
+| `{date.day}` | Current day number |
+| `{date.month}` | Current month number |
+| `{date.year}` | Current year |
+| `{time.hour}` | Current hour |
+| `{time.minute}` | Current minute |
+
+---
+
+## Formatting
+
+| Variable | Description |
+|---|---|
+| `{newline}` or `{nl}` | Inserts a line break |
+
+---
+
+## Random
+
+| Variable | Description |
+|---|---|
+| `{random:1-100}` | Random number between two values |
+| `{randomcolor}` | Random hex color |
+| `{choice:a\|b\|c}` | Picks one option at random |
+| `{random.user}` | Random server member mention |
+| `{random.channel}` | Random channel mention |
+| `{random.role}` | Random role mention |
+
+---
+
+## Mentions by ID
+
+| Variable | Description |
+|---|---|
+| `{#channelid}` | Mention a channel by ID |
+| `{&roleid}` | Mention a role by ID |
+
+---
+
+## Autoresponder & Button Flags
+
+These are special action flags used only in autoresponder responses and functional buttons:
+
+| Flag | Description |
+|---|---|
+| `{embed:name}` | Attach a saved embed by name |
+| `{dm}` | Send as a DM to the message author |
+| `{reply}` | Reply to the triggering message |
+| `{pin}` | Pin the bot's response |
+| `{delete}` | Delete the original trigger message |
+| `{channel:#id}` | Send response to a specific channel |
+| `{react:emoji}` | React to the trigger message |
+| `{addrole:@role}` | Add a role to the author |
+| `{removerole:@role}` | Remove a role from the author |
+| `{cooldown:N}` | Per-user cooldown of N seconds |
+| `{chance:N}` | Fire N% of the time |
+| `{require:@role}` | Only fire if the author has the role |
+| `{buttons:name1,name2}` | Attach named buttons to the response |

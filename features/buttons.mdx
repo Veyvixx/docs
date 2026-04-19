@@ -1,0 +1,84 @@
+---
+title: "Buttons"
+description: "Create interactive buttons — link buttons that open URLs, and functional buttons that run actions and responses."
+---
+
+Nana lets you create two types of custom buttons that can be attached to autoresponder responses or sent standalone.
+
+## Button Types
+
+### Linked Buttons
+
+A simple button that opens a URL when clicked. Perfect for invite links, social media, websites, or any external resource.
+
+```
+/button create linked <name>
+```
+
+| Option | Description |
+|---|---|
+| `name` | Internal name used to reference the button |
+| `label` | Text displayed on the button |
+| `url` | The URL to open when clicked |
+| `emoji` | Optional emoji to show on the button |
+
+### Functional Buttons
+
+A button that executes a full autoresponder-style response when clicked. Supports all response flags including embeds, role actions, DMs, reactions, and more.
+
+```
+/button create functional <name>
+```
+
+| Option | Description |
+|---|---|
+| `name` | Internal name used to reference the button |
+| `label` | Text displayed on the button |
+| `style` | Button color: `primary`, `secondary`, `success`, or `danger` |
+| `emoji` | Optional emoji to show on the button |
+| `response` | The response to fire — same format as autoresponder responses |
+
+## Attaching Buttons to Responses
+
+Once created, attach buttons to autoresponders using the `{buttons:name1,name2}` flag in the response:
+
+```
+Welcome to the server! {embed:welcome} {buttons:rules-btn,discord-btn}
+```
+
+Multiple buttons can be listed comma-separated.
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `/button create linked <name>` | Create a button that opens a URL |
+| `/button create functional <name>` | Create a button that runs a response |
+| `/button edit <name>` | Edit an existing button |
+| `/button delete <name>` | Delete a button |
+| `/button list` | List all buttons in this server |
+
+## Inventory (Premium)
+
+Premium members can save buttons to a personal inventory and reuse them across any server they manage.
+
+| Command | Description |
+|---|---|
+| `/button inventory save <name>` | Save a button to your personal inventory |
+| `/button inventory load <name>` | Import a button from your inventory into this server |
+| `/button inventory list` | Browse your saved buttons |
+| `/button inventory delete <name>` | Remove a button from your inventory |
+
+<Info>
+  Button inventory access is a premium feature. Free users can still create and use buttons server-wide.
+</Info>
+
+## Tips
+
+<Tip>
+  Button names are internal — only you see them. Use clear names like `verify-btn` or `rules-link` so they're easy to reference later.
+</Tip>
+
+<Tip>
+  Functional buttons support all autoresponder response flags. You can use `{addrole}`, `{embed:name}`, `{dm}`, and more inside a button's response.
+</Tip>

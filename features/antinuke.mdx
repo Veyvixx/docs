@@ -1,0 +1,87 @@
+---
+title: "Anti-Nuke"
+description: "Real-time protection that automatically detects and stops mass destructive actions on your server."
+---
+
+Nana's anti-nuke system watches your server in real time and acts instantly when suspicious activity is detected — no database queries on the hot path, everything runs in memory for maximum speed.
+
+## How It Works
+
+Nana monitors audit log events using a **rolling time window**. If any single user performs a protected action more times than the configured threshold within that window, Nana immediately punishes them.
+
+**Protected actions:**
+- Mass bans
+- Mass kicks
+- Mass channel deletions
+- Mass role deletions
+- Webhook creation spam
+
+When triggered, Nana can either **ban** or **kick** the offender, and posts an alert to your mod log channel.
+
+## Dashboard
+
+Open the anti-nuke dashboard with `/antinuke status`. From there you can:
+
+- See the current status (enabled/disabled)
+- View the configured punishment and detection window
+- See all threshold values
+- Toggle the system on or off
+- Edit thresholds via an interactive modal
+- Change the punishment with a dropdown
+
+<Tip>
+  All changes in the dashboard are saved instantly — no additional commands needed.
+</Tip>
+
+## Commands
+
+| Command | Description | Permission |
+|---|---|---|
+| `/antinuke status` | Open the interactive dashboard | Administrator |
+| `/antinuke toggle` | Quickly enable or disable protection | Administrator |
+| `/antinuke config` | Configure thresholds and punishment | Administrator |
+| `/antinuke logs` | View the 10 most recent suspicious events | Administrator |
+| `/antinuke whitelist add <user>` | Whitelist a trusted user | Administrator |
+| `/antinuke whitelist remove <user>` | Remove a user from the whitelist | Administrator |
+| `/antinuke whitelist list` | View all whitelisted users | Administrator |
+
+## Configuration
+
+You can configure the following settings per server:
+
+| Setting | Default | Description |
+|---|---|---|
+| **Punishment** | `BAN` | What happens to the offender — `ban` or `kick` |
+| **Detection Window** | `10s` | How many seconds to observe actions within |
+| **Ban Threshold** | `3` | Mass bans before triggering |
+| **Kick Threshold** | `3` | Mass kicks before triggering |
+| **Channel Delete Threshold** | `3` | Mass channel deletions before triggering |
+| **Role Delete Threshold** | `3` | Mass role deletions before triggering |
+
+<Warning>
+  Set thresholds too low and legitimate staff actions may be flagged. Whitelist trusted admins and bots to avoid false positives.
+</Warning>
+
+## Whitelist
+
+The whitelist lets you exclude trusted users (such as admins or bots) from anti-nuke detection. Whitelisted users can perform mass actions freely without being punished.
+
+```
+/antinuke whitelist add @username
+/antinuke whitelist remove @username
+/antinuke whitelist list
+```
+
+<Info>
+  The bot itself is automatically excluded from anti-nuke detection.
+</Info>
+
+## Logs
+
+Use `/antinuke logs` to see recent suspicious activity. Each entry shows:
+
+- The action that was detected (e.g. mass ban)
+- Which user triggered it
+- How many actions were counted
+- What punishment was applied
+- When it happened

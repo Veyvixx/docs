@@ -1,0 +1,128 @@
+---
+title: "Command Reference"
+description: "A full list of every slash command available in Nana, organized by category."
+---
+
+All commands use Discord's slash command system. Start with `/` and select the command from the menu.
+
+## Utility
+
+| Command | Description |
+|---|---|
+| `/ping` | Check bot and database latency |
+| `/about` | Bot stats, server count, and uptime |
+| `/avatar [user]` | View a user's server or global avatar |
+| `/banner [user]` | View a user's profile banner |
+| `/userinfo [user]` | Detailed member profile |
+| `/serverinfo` | Server statistics |
+| `/roleinfo <role>` | Role details and permissions |
+| `/whois [user]` | Full profile with banner, badges, and account info |
+| `/variables` | Show all available template variables |
+| `/help` | Browse all commands by category |
+| `/premium` | View your premium status and tier |
+
+## Moderation
+
+| Command | Description | Permission |
+|---|---|---|
+| `/ban <user>` | Permanently ban a member | Ban Members |
+| `/unban <id>` | Unban a user by ID | Ban Members |
+| `/kick <user>` | Kick a member | Kick Members |
+| `/timeout <user> <dur>` | Apply a timeout (e.g. `10m`, `2h`, `1d`) | Moderate Members |
+| `/untimeout <user>` | Remove a timeout | Moderate Members |
+| `/mute <user> [dur]` | Role-based mute with optional duration | Manage Roles |
+| `/unmute <user>` | Remove a role-based mute | Manage Roles |
+| `/jail <user>` | Restrict to the jail channel | Manage Roles |
+| `/unjail <user>` | Release from jail | Manage Roles |
+| `/lock [channel]` | Lock a channel | Manage Channels |
+| `/unlock [channel]` | Unlock a channel | Manage Channels |
+| `/refreshchannel` | Recreate channel, clearing all messages | Manage Channels |
+| `/warn <user> <reason>` | Issue a formal warning | Moderate Members |
+| `/warnings <user>` | View paginated warning history | Moderate Members |
+| `/clearwarnings <user>` | Clear all warnings for a member | Moderate Members |
+| `/purge <amount>` | Bulk delete up to 100 messages | Manage Messages |
+| `/automod spam` | Enable/disable spam filter | Manage Guild |
+| `/automod invites` | Block Discord invites | Manage Guild |
+| `/automod keywords` | Block custom keywords | Manage Guild |
+| `/automod mentions` | Limit mass mentions | Manage Guild |
+| `/automod list` | View all AutoMod rules | Manage Guild |
+| `/automod disable` | Disable a rule by ID | Manage Guild |
+
+## Anti-Nuke
+
+| Command | Description | Permission |
+|---|---|---|
+| `/antinuke status` | Open the protection dashboard | Administrator |
+| `/antinuke toggle` | Enable or disable anti-nuke | Administrator |
+| `/antinuke config` | Configure thresholds and punishment | Administrator |
+| `/antinuke whitelist add <user>` | Add user to whitelist | Administrator |
+| `/antinuke whitelist remove <user>` | Remove user from whitelist | Administrator |
+| `/antinuke whitelist list` | View whitelisted users | Administrator |
+| `/antinuke logs` | Recent suspicious activity log | Administrator |
+
+## Autoresponders
+
+| Command | Description | Permission |
+|---|---|---|
+| `/autoresponder create <trigger>` | Create a new autoresponder | Manage Guild |
+| `/autoresponder edit <trigger>` | Edit an autoresponder | Manage Guild |
+| `/autoresponder delete <trigger>` | Delete an autoresponder | Manage Guild |
+| `/autoresponder list` | List all server autoresponders | Manage Guild |
+| `/autoresponder enable <trigger>` | Enable a disabled autoresponder | Manage Guild |
+| `/autoresponder disable <trigger>` | Disable without deleting | Manage Guild |
+| `/autoresponder view <trigger>` | Inspect an autoresponder | Manage Guild |
+| `/autoresponder inventory save` | Save to your inventory ✨ | Manage Guild |
+| `/autoresponder inventory load` | Import from your inventory ✨ | Manage Guild |
+| `/autoresponder inventory list` | View your inventory ✨ | — |
+| `/autoresponder inventory delete` | Remove from your inventory ✨ | — |
+
+## Buttons
+
+| Command | Description |
+|---|---|
+| `/button create linked <name>` | Button that opens a URL |
+| `/button create functional <name>` | Button that runs a response |
+| `/button edit <name>` | Edit a button |
+| `/button delete <name>` | Delete a button |
+| `/button list` | List all server buttons |
+| `/button inventory save` | Save to your inventory ✨ |
+| `/button inventory load` | Import from your inventory ✨ |
+| `/button inventory list` | View your button inventory ✨ |
+| `/button inventory delete` | Remove from your inventory ✨ |
+
+## Customization
+
+| Command | Description |
+|---|---|
+| `/set greet message/channel` | Configure greet messages |
+| `/set leave message/channel` | Configure leave messages |
+| `/set boost message/channel` | Configure boost messages |
+| `/set log channel` | Set the server event log channel |
+| `/set log disable` | Disable event logging |
+| `/set jail channel` | Set the jail channel |
+| `/test greet / leave / boost` | Preview event messages |
+| `/embed create <name>` | Create a named embed |
+| `/embed edit <name>` | Edit an existing embed |
+| `/embed send <name>` | Send a saved embed |
+| `/embed list` | List all saved embeds |
+| `/autorole set / toggle` | Auto-assign a role on join |
+| `/modlog <channel>` | Set mod-log channel |
+| `/settings` | Settings dashboard |
+| `/customize avatar / banner / bio` | Customize bot's server profile |
+| `/customize palette set` | Set a custom embed color palette ✨ |
+| `/customize palette view` | Preview your saved palette ✨ |
+| `/customize palette reset` | Restore the default palette ✨ |
+| `/customize emojis set` | Set custom status emojis ✨ |
+| `/customize emojis view` | Preview your saved emoji set ✨ |
+| `/customize emojis reset` | Restore the default emojis ✨ |
+
+## Premium
+
+| Command | Description |
+|---|---|
+| `/premium` | View your premium status and tiers |
+| `/activate premium [server_id]` | Activate premium on a server (2 weeks) |
+| `/activation switch <server_id>` | Move your activation (1-week cooldown) |
+| `/activation status` | View your current activation |
+
+<sup>✨ Premium feature</sup>

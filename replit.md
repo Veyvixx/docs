@@ -1,21 +1,35 @@
-# Mintlify Starter Kit
+# Nana Bot Documentation
 
 ## Overview
 
-A documentation website built with [Mintlify](https://mintlify.com/). This is the Mint Starter Kit template for creating and deploying documentation using the Mintlify platform.
+Documentation site for **Nana** — a Discord bot built with a soft aesthetic and powerful capabilities. The docs are built with Mintlify and cover all public-facing features of the bot.
 
 ## Project Structure
 
-- `docs.json` — Core configuration file (navigation, theme, colors, logo)
-- `index.mdx` — Home/landing page
-- `quickstart.mdx` — Quickstart guide
-- `development.mdx` — Local development instructions
-- `essentials/` — Content guides (markdown, code blocks, images, snippets, navigation, settings)
-- `api-reference/` — API documentation pages and OpenAPI spec
-- `ai-tools/` — Guides for AI coding tools (Cursor, Claude Code, Windsurf)
-- `snippets/` — Reusable MDX components
-- `images/` — Static images
-- `logo/` — Light and dark mode SVG logos
+- `docs.json` — Core configuration (navigation, colors `#A38F8F`/`#726060`, logo, links)
+- `index.mdx` — Introduction / landing page with feature card grid
+- `quickstart.mdx` — Getting started guide
+- `features/` — Feature documentation pages
+  - `moderation.mdx` — Moderation commands (ban, kick, mute, jail, warn, purge, automod)
+  - `antinuke.mdx` — Anti-nuke protection system
+  - `autoresponders.mdx` — Trigger-based autoresponder system with flags
+  - `buttons.mdx` — Custom link and functional buttons
+  - `customization.mdx` — Greet/leave/boost, embed builder, autorole, palette, emojis
+  - `event-logging.mdx` — Server event logging
+- `premium/` — Premium tier information
+  - `overview.mdx` — Tiers, features comparison, and pricing
+  - `activation.mdx` — How to activate and switch premium server slots
+- `reference/` — Technical reference
+  - `commands.mdx` — Full command reference by category
+  - `variables.mdx` — Template variable reference
+- `discord-bot/` — Source code of the actual Nana bot (Python, not served in docs)
+
+## Color Palette
+
+The docs use Nana's rose/blush color palette:
+- Primary: `#A38F8F`
+- Light: `#F7EFEF`
+- Dark: `#726060`
 
 ## Tech Stack
 
@@ -32,8 +46,7 @@ The app runs via the "Start application" workflow using:
 mint dev --port 5000
 ```
 
-The local preview is available at port 5000.
+## External Links
 
-## Deployment
-
-Configured as an autoscale deployment running `mint dev --port 5000`.
+- Support Server: https://discord.gg/BQcm3ptaxX
+- Patreon: https://patreon.com/NanaBotDis

@@ -1,0 +1,151 @@
+---
+title: "Customization"
+description: "Configure greet/leave/boost messages, the embed builder, autorole, mod logs, custom palettes, and more."
+---
+
+Nana gives your server full control over automated messages, embeds, and its own visual appearance — all without writing a single line of code.
+
+## Greet, Leave & Boost Messages
+
+Set up automatic messages when members join, leave, or boost your server.
+
+### Setup
+
+<Steps>
+  <Step title="Set the channel">
+    ```
+    /set greet channel <channel>
+    /set leave channel <channel>
+    /set boost channel <channel>
+    ```
+  </Step>
+  <Step title="Set the message">
+    ```
+    /set greet message <text>
+    /set leave message <text>
+    /set boost message <text>
+    ```
+    Messages support template [variables](/reference/variables) like `{user.mention}` and `{server.count}`.
+  </Step>
+  <Step title="Optionally link an embed">
+    Reference a saved embed inside your message using `{embed:name}`.
+  </Step>
+  <Step title="Preview before going live">
+    ```
+    /test greet
+    /test leave
+    /test boost
+    ```
+    This fires a test message so you can see exactly how it will look.
+  </Step>
+</Steps>
+
+## Embed Builder
+
+Create rich, named embeds that can be sent anywhere or attached to greet/leave/boost messages and autoresponders.
+
+```
+/embed create <name>
+```
+
+The interactive builder lets you set:
+
+- **Basic Info** — title, description, color, and URL
+- **Author** — author name, URL, and icon
+- **Footer** — footer text and icon
+- **Images** — thumbnail and main image
+- **Fields** — up to 25 inline or block fields
+
+Changes are saved and previewed in real time as you edit.
+
+### Embed Commands
+
+| Command | Description |
+|---|---|
+| `/embed create <name>` | Open the embed builder |
+| `/embed edit <name>` | Edit an existing saved embed |
+| `/embed send <name>` | Send a saved embed to the current channel |
+| `/embed list` | View all saved embeds in this server |
+
+### Embed Inventory (Premium)
+
+Save embeds to your personal inventory and reuse them across any server you manage.
+
+| Command | Description |
+|---|---|
+| `/embed inventory save <name>` | Save an embed to your inventory |
+| `/embed inventory load <name>` | Import from your inventory |
+| `/embed inventory list` | Browse your saved embeds |
+| `/embed inventory delete <name>` | Remove from your inventory |
+
+## Autorole
+
+Automatically assign a role to every new member when they join.
+
+```
+/autorole set <role>
+/autorole toggle
+```
+
+| Command | Description |
+|---|---|
+| `/autorole set <role>` | Set the role to assign on join |
+| `/autorole toggle` | Enable or disable autorole |
+
+## Mod Log
+
+Route moderation action logs to a dedicated channel.
+
+```
+/modlog <channel>
+```
+
+Once set, every ban, kick, warn, mute, jail, and timeout will post a formatted embed with the case ID, moderator, target, reason, and timestamp.
+
+## Settings Dashboard
+
+Use `/settings` to open an overview of all your configured settings at once — greet, leave, boost, autorole, anti-nuke, and mod log.
+
+## Custom Palette (Premium)
+
+Premium servers can replace Nana's default embed colors with a fully custom palette.
+
+```
+/customize palette set
+/customize palette view
+/customize palette reset
+```
+
+You can set custom hex colors for:
+
+| Key | Used for |
+|---|---|
+| `primary` | Default / informational embeds |
+| `secondary` | Neutral / list embeds |
+| `accent` | Highlights |
+| `success` | Confirmations and successes |
+| `error` | Errors and failures |
+
+## Custom Emojis (Premium)
+
+Replace Nana's default status emojis (success, error, warning, etc.) with your own custom server emojis.
+
+```
+/customize emojis set
+/customize emojis view
+/customize emojis reset
+```
+
+<Info>
+  Custom palettes and emojis are premium-only features. They apply server-wide and override Nana's defaults for all embeds.
+</Info>
+
+## Server Profile
+
+Customize how Nana appears within your server:
+
+```
+/customize avatar
+/customize banner
+/customize bio
+```

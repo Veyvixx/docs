@@ -1,0 +1,177 @@
+---
+title: "Moderation"
+description: "A complete suite of moderation tools — banning, muting, jailing, warnings, purging, and auto-moderation."
+---
+
+Nana's moderation system gives your staff everything they need to keep your community safe. Every action is logged with a case ID, sent to your mod log channel, and DM'd to the affected member when possible.
+
+## Core Actions
+
+<AccordionGroup>
+  <Accordion title="/ban — Permanently ban a member" icon="ban">
+    Bans a member from the server. Requires a confirmation step before executing.
+
+    | Option | Description |
+    |---|---|
+    | `user` | The member to ban |
+    | `reason` | Reason for the ban (optional) |
+    | `delete_days` | Days of messages to delete `0–7` (optional) |
+
+    **Required permissions:** Ban Members
+  </Accordion>
+  <Accordion title="/unban — Unban a user by ID" icon="user-check">
+    Unbans a previously banned user using their Discord ID.
+
+    | Option | Description |
+    |---|---|
+    | `user_id` | The Discord ID of the user to unban |
+    | `reason` | Reason (optional) |
+
+    **Required permissions:** Ban Members
+  </Accordion>
+  <Accordion title="/kick — Kick a member" icon="right-from-bracket">
+    Removes a member from the server. They can rejoin with an invite.
+
+    | Option | Description |
+    |---|---|
+    | `user` | The member to kick |
+    | `reason` | Reason (optional) |
+
+    **Required permissions:** Kick Members
+  </Accordion>
+  <Accordion title="/timeout — Temporarily restrict a member" icon="clock">
+    Applies Discord's native timeout, preventing the member from sending messages or joining voice for the specified duration.
+
+    | Option | Description |
+    |---|---|
+    | `user` | The member to timeout |
+    | `duration` | Duration e.g. `10m`, `2h`, `1d` |
+    | `reason` | Reason (optional) |
+
+    **Required permissions:** Moderate Members
+  </Accordion>
+  <Accordion title="/untimeout — Remove a member's timeout" icon="clock-rotate-left">
+    Lifts an active timeout from a member immediately.
+
+    **Required permissions:** Moderate Members
+  </Accordion>
+</AccordionGroup>
+
+## Warnings
+
+<AccordionGroup>
+  <Accordion title="/warn — Issue a formal warning" icon="triangle-exclamation">
+    Adds a formal warning to a member's record and DMs them the reason. Warnings are stored per-server and tracked with case IDs.
+
+    | Option | Description |
+    |---|---|
+    | `user` | Member to warn |
+    | `reason` | Reason for the warning |
+
+    **Required permissions:** Moderate Members
+  </Accordion>
+  <Accordion title="/warnings — View a member's warning history" icon="list">
+    Opens a paginated view of all warnings issued to a member in your server.
+
+    **Required permissions:** Moderate Members
+  </Accordion>
+  <Accordion title="/clearwarnings — Clear all warnings" icon="trash">
+    Removes all warnings for a member. Requires confirmation before executing.
+
+    **Required permissions:** Moderate Members
+  </Accordion>
+</AccordionGroup>
+
+## Jail System
+
+The jail system restricts a member to a single designated channel — perfect for holding someone while staff reviews a situation.
+
+<Steps>
+  <Step title="Set up a jail channel">
+    Run `/set jail channel` to designate which channel jailed members will be confined to.
+  </Step>
+  <Step title="Jail a member">
+    Run `/jail <user>` to restrict them. Nana automatically creates a "Jailed" role and applies channel overrides across the server.
+  </Step>
+  <Step title="Release the member">
+    Run `/unjail <user>` to remove the jailed role and restore their access.
+  </Step>
+</Steps>
+
+<Info>
+  Nana automatically creates and manages the "Jailed" role and its channel permission overrides. You don't need to set this up manually.
+</Info>
+
+## Role-Based Mute
+
+<AccordionGroup>
+  <Accordion title="/mute — Mute a member using a role" icon="microphone-slash">
+    Applies a "Muted" role that blocks the member from sending messages or speaking in voice. Supports an optional duration for temporary mutes.
+
+    | Option | Description |
+    |---|---|
+    | `user` | Member to mute |
+    | `duration` | Optional — e.g. `10m`, `2h`, `1d` |
+    | `reason` | Reason (optional) |
+
+    **Required permissions:** Manage Roles
+  </Accordion>
+  <Accordion title="/unmute — Remove a role-based mute" icon="microphone">
+    Removes the "Muted" role from a member.
+
+    **Required permissions:** Manage Roles
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  If you already have a Muted role set up, Nana will use it. Otherwise it creates one automatically.
+</Tip>
+
+## Channel Tools
+
+<AccordionGroup>
+  <Accordion title="/lock — Lock a channel" icon="lock">
+    Prevents members from sending messages in the channel by denying the `Send Messages` permission for `@everyone`.
+
+    **Required permissions:** Manage Channels
+  </Accordion>
+  <Accordion title="/unlock — Unlock a channel" icon="lock-open">
+    Restores the `Send Messages` permission for `@everyone`.
+
+    **Required permissions:** Manage Channels
+  </Accordion>
+  <Accordion title="/refreshchannel — Recreate a channel" icon="rotate">
+    Clones the current channel and deletes the original, effectively clearing all its messages while preserving settings. Great for wiping spam.
+
+    **Required permissions:** Manage Channels
+  </Accordion>
+  <Accordion title="/purge — Bulk delete messages" icon="trash">
+    Deletes up to 100 messages at once. Optionally filter to a specific user's messages only.
+
+    | Option | Description |
+    |---|---|
+    | `amount` | Number of messages to delete `1–100` |
+    | `user` | Only delete this member's messages (optional) |
+
+    **Required permissions:** Manage Messages
+  </Accordion>
+</AccordionGroup>
+
+## AutoMod
+
+Nana can automatically enforce server rules without requiring manual moderator action.
+
+| Command | Description |
+|---|---|
+| `/automod spam` | Enable or disable the spam filter |
+| `/automod invites` | Block Discord invite links |
+| `/automod keywords` | Block custom keywords |
+| `/automod mentions` | Limit mass mentions per message |
+| `/automod list` | View all active AutoMod rules |
+| `/automod disable` | Disable a rule by its ID |
+
+**Required permissions:** Manage Guild
+
+## Mod Log Setup
+
+To enable mod logs, use `/modlog <channel>`. Nana will post a formatted embed for every moderation action — including the case ID, moderator, target, reason, and timestamp.

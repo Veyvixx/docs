@@ -1,0 +1,117 @@
+---
+title: "Autoresponders"
+description: "Create trigger-based automatic responses with embeds, role actions, DMs, reactions, cooldowns, and more."
+---
+
+Autoresponders let your server reply to messages automatically based on triggers you define. They support dynamic variables, named embeds, role actions, reactions, DMs, cooldowns, and custom buttons.
+
+## How It Works
+
+When a message is sent in your server, Nana checks it against all active autoresponders. If the message matches a trigger (using the configured match type), Nana fires the response.
+
+The **first matching** autoresponder wins — so order matters if triggers could overlap.
+
+## Creating an Autoresponder
+
+Use `/autoresponder create <trigger>` to get started.
+
+| Option | Description |
+|---|---|
+| `trigger` | The word or phrase to watch for |
+| `match` | How to match: `exact`, `contains`, `starts with`, `ends with`, or `regex` |
+| `case_sensitive` | Whether to match case-sensitively (default: off) |
+| `cooldown` | Per-user cooldown in seconds (0 = no cooldown) |
+
+After setting your options, a modal will appear for you to enter the response text.
+
+## Match Types
+
+| Match Type | Behavior |
+|---|---|
+| `exact` | The entire message must match the trigger exactly |
+| `contains` | The trigger appears anywhere in the message |
+| `starts with` | The message begins with the trigger |
+| `ends with` | The message ends with the trigger |
+| `regex` | The trigger is a regular expression pattern |
+
+## Response Flags
+
+Responses support special `{flag}` syntax to control behavior beyond plain text:
+
+### Content & Embeds
+
+| Flag | Description |
+|---|---|
+| `{embed:name}` | Attach a saved embed by name |
+
+### Message Behavior
+
+| Flag | Description |
+|---|---|
+| `{dm}` | Send the response as a DM to the trigger author |
+| `{reply}` | Reply directly to the triggering message |
+| `{pin}` | Pin the response message |
+| `{delete}` | Delete the original message that triggered this |
+| `{channel:#id}` | Send the response to a specific channel |
+
+### Guards
+
+| Flag | Description |
+|---|---|
+| `{cooldown:N}` | Per-user cooldown of N seconds |
+| `{chance:N}` | Only fire N% of the time (e.g. `{chance:50}` fires 50% of triggers) |
+| `{require:@role}` | Only fire if the author has a specific role |
+
+### Role Actions
+
+| Flag | Description |
+|---|---|
+| `{addrole:@role}` | Add a role to the message author |
+| `{removerole:@role}` | Remove a role from the message author |
+
+### Reactions
+
+| Flag | Description |
+|---|---|
+| `{react:🎉}` | React to the triggering message with an emoji |
+
+### Buttons
+
+| Flag | Description |
+|---|---|
+| `{buttons:name1,name2}` | Attach named buttons to the response |
+
+<Tip>
+  Flags can be combined freely. For example: `Hello {user.mention}! {react:👋} {addrole:@Verified} {embed:welcome}`
+</Tip>
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `/autoresponder create <trigger>` | Create a new autoresponder |
+| `/autoresponder edit <trigger>` | Edit an existing autoresponder |
+| `/autoresponder delete <trigger>` | Delete an autoresponder |
+| `/autoresponder list` | List all autoresponders in this server |
+| `/autoresponder enable <trigger>` | Enable a disabled autoresponder |
+| `/autoresponder disable <trigger>` | Disable without deleting |
+| `/autoresponder view <trigger>` | Inspect a single autoresponder's config |
+
+## Inventory (Premium)
+
+Premium members can save autoresponders to a personal inventory and load them into any server they manage.
+
+| Command | Description |
+|---|---|
+| `/autoresponder inventory save <trigger>` | Save an autoresponder to your inventory |
+| `/autoresponder inventory load <trigger>` | Import from your inventory into this server |
+| `/autoresponder inventory list` | Browse your saved autoresponders |
+| `/autoresponder inventory delete <trigger>` | Remove from your inventory |
+
+<Info>
+  The free tier supports **3 autoresponders** per server. Premium unlocks higher limits and the inventory system.
+</Info>
+
+## Variables
+
+Autoresponder responses support all of Nana's template variables — such as `{user.mention}`, `{server.name}`, `{server.count}`, and more. See the [Variables reference](/reference/variables) for the full list.
