@@ -64,8 +64,8 @@
     }
   },
   "logo": {
-    "light": "/logo/nana.jpg",
-    "dark": "/logo/nana.jpg"
+    "light": "/logo/nana-circle.png",
+    "dark": "/logo/nana-circle.png"
   },
   "navbar": {
     "links": [
