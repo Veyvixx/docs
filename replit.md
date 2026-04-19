@@ -22,7 +22,6 @@ Documentation site for **Nana** — a Discord bot built with a soft aesthetic an
 - `reference/` — Technical reference
   - `commands.mdx` — Full command reference by category
   - `variables.mdx` — Template variable reference
-- `discord-bot/` — Source code of the actual Nana bot (Python, not served in docs)
 
 ## Color Palette
 
