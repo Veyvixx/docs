@@ -77,6 +77,27 @@ To disable logging:
 | Emojis updated | Emojis added and removed |
 | Stickers updated | Stickers added and removed |
 
+### Threads
+
+| Event | What's logged |
+|---|---|
+| Thread created | Thread name, parent channel, creator |
+| Thread deleted | Thread name, parent channel |
+| Thread updated | Name, archived status, locked status, slowmode changes |
+
+### Invites
+
+| Event | What's logged |
+|---|---|
+| Invite created | Code, channel, creator, max uses, expiry, temporary status |
+| Invite deleted / expired | Code and channel |
+
+### Commands
+
+| Event | What's logged |
+|---|---|
+| Slash command used | Command name, user, channel |
+
 <Tip>
   Keep your log channel private — visible only to staff — so the constant activity doesn't clutter the server for regular members.
 </Tip>

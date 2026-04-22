@@ -88,10 +88,10 @@ Responses support special `{flag}` syntax to control behavior beyond plain text:
 
 | Flag | Description |
 |---|---|
-| `{buttons:name1,name2}` | Attach named buttons to the response |
+| `{button:name}` | Attach a named button to the response. Add one flag per button. |
 
 <Tip>
-  Flags can be combined freely. For example: `Hello {user.mention}! {react:👋} {addrole:@Verified} {embed:welcome}`
+  Flags can be combined freely. For example: `Hello {user.mention}! {react:👋} {addrole:@Verified} {embed:welcome} {button:rules-btn} {button:discord-btn}`
 </Tip>
 
 ## Commands

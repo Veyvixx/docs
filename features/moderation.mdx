@@ -136,14 +136,24 @@ The jail system restricts a member to a single designated channel — perfect fo
 
 <AccordionGroup>
   <Accordion title="/lock — Lock a channel" icon="lock">
-    Prevents members from sending messages in the channel by denying the `Send Messages` permission for `@everyone`.
+    Prevents members from sending messages in the channel by denying the `Send Messages` permission for `@everyone`. Optionally target a specific channel, otherwise defaults to the current one.
 
-    **Required permissions:** Manage Channels
+    | Option | Description |
+    |---|---|
+    | `channel` | Channel to lock (optional, defaults to current) |
+    | `reason` | Reason (optional) |
+
+    **Required permissions:** Manage Roles
   </Accordion>
   <Accordion title="/unlock — Unlock a channel" icon="lock-open">
-    Restores the `Send Messages` permission for `@everyone`.
+    Restores the `Send Messages` permission for `@everyone`. Optionally target a specific channel, otherwise defaults to the current one.
 
-    **Required permissions:** Manage Channels
+    | Option | Description |
+    |---|---|
+    | `channel` | Channel to unlock (optional, defaults to current) |
+    | `reason` | Reason (optional) |
+
+    **Required permissions:** Manage Roles
   </Accordion>
   <Accordion title="/refreshchannel — Recreate a channel" icon="rotate">
     Clones the current channel and deletes the original, effectively clearing all its messages while preserving settings. Great for wiping spam.
@@ -176,6 +186,23 @@ Nana can automatically enforce server rules without requiring manual moderator a
 | `/automod disable` | Disable a rule by its ID |
 
 **Required permissions:** Manage Guild
+
+## Emoji Steal
+
+<AccordionGroup>
+  <Accordion title="/steal — Import emojis from other servers" icon="face-smile">
+    Copies one or more custom emojis from another server into yours by pasting them directly into the command. Nana automatically respects your server's emoji slot limits, separating static and animated emoji caps.
+
+    | Option | Description |
+    |---|---|
+    | `emojis` | Paste one or more custom emojis (e.g. `<:name:123> <a:foo:456>`) |
+    | `count` | How many to add — `0` means as many as fit (optional) |
+
+    Nana will report how many were added, skipped (slots full), or failed (couldn't fetch).
+
+    **Required permissions:** Manage Expressions
+  </Accordion>
+</AccordionGroup>
 
 ## Mod Log Setup
 

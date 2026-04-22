@@ -45,13 +45,13 @@ A button that executes a full autoresponder-style response when clicked. Support
 
 ## Attaching Buttons to Responses
 
-Once created, attach buttons to autoresponders using the `{buttons:name1,name2}` flag in the response:
+Once created, attach buttons to autoresponders using `{button:name}` flags in the response — one flag per button:
 
 ```
-Welcome to the server! {embed:welcome} {buttons:rules-btn,discord-btn}
+Welcome to the server! {embed:welcome} {button:rules-btn} {button:discord-btn}
 ```
 
-Multiple buttons can be listed comma-separated.
+Add as many `{button:name}` flags as you need, each referencing a button by its internal name.
 
 ## Commands
 
