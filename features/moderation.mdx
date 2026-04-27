@@ -174,16 +174,73 @@ The jail system restricts a member to a single designated channel — perfect fo
 
 ## AutoMod
 
-Nana can automatically enforce server rules without requiring manual moderator action.
+Nana integrates with Discord's native AutoMod system using named **presets**. Each preset creates or manages a real Discord AutoMod rule and can be configured with custom actions, exemptions, and options — all without touching the Discord settings panel.
+
+**Available presets:**
+
+| Preset | What it blocks |
+|---|---|
+| `keyword` | A custom list of words and phrases you define |
+| `spam` | Discord's built-in spam detection |
+| `invite` | Discord invite links |
+| `link` | Any `http://` or `https://` URL |
+| `caps` | Messages with 10+ consecutive uppercase characters |
+| `mention_spam` | Messages that exceed a mention limit you set |
+
+### Enabling & Disabling
+
+```
+/automod enable <preset>
+/automod disable <preset>
+```
+
+Running `/automod disable` once **disables** the rule. Running it a second time **deletes** the rule entirely.
+
+Use `/automod list` to see the status of every preset at a glance.
+
+### Configuring Actions
+
+Each preset can block messages, send an alert to a log channel, and/or automatically timeout the offender:
+
+```
+/automod action set <preset> [timeout_seconds] [log_channel]
+```
+
+| Option | Description |
+|---|---|
+| `preset` | Which preset to configure |
+| `timeout_seconds` | Auto-timeout the offender for N seconds (0 = off) |
+| `log_channel` | Channel to alert when the rule triggers |
+
+### Exemptions (Whitelist)
+
+Exempt specific roles or channels from a preset so they're never affected:
 
 | Command | Description |
 |---|---|
-| `/automod spam` | Enable or disable the spam filter |
-| `/automod invites` | Block Discord invite links |
-| `/automod keywords` | Block custom keywords |
-| `/automod mentions` | Limit mass mentions per message |
-| `/automod list` | View all active AutoMod rules |
-| `/automod disable` | Disable a rule by its ID |
+| `/automod whitelist add_role <preset> <role>` | Exempt a role |
+| `/automod whitelist remove_role <preset> <role>` | Remove a role exemption |
+| `/automod whitelist add_channel <preset> <channel>` | Exempt a channel |
+| `/automod whitelist remove_channel <preset> <channel>` | Remove a channel exemption |
+
+### Managing Keywords
+
+The `keyword` preset has its own word list you can manage one entry at a time. Wildcards (`*`) are supported.
+
+| Command | Description |
+|---|---|
+| `/automod keyword add <word>` | Add a word or phrase to block |
+| `/automod keyword remove <word>` | Remove a word from the list |
+| `/automod keyword list` | View all blocked keywords |
+| `/automod keyword clear` | Wipe the entire keyword list |
+
+### Mention Spam Limit
+
+Set the maximum number of mentions allowed per message before the `mention_spam` preset triggers:
+
+```
+/automod mentions <limit>
+```
 
 **Required permissions:** Manage Guild
 
@@ -203,6 +260,18 @@ Nana can automatically enforce server rules without requiring manual moderator a
     **Required permissions:** Manage Expressions
   </Accordion>
 </AccordionGroup>
+
+## Mod History
+
+View a member's complete moderation history — warnings, bans, kicks, timeouts, mutes, jails — all in one paginated timeline sorted newest first.
+
+```
+/mod history <user>
+```
+
+The embed shows a tally of each action type at the top followed by detailed entries including the moderator, reason, and relative timestamp.
+
+**Required permissions:** Moderate Members
 
 ## Mod Log Setup
 

@@ -60,6 +60,9 @@ T_MOD_ACTIONS    = "nana_mod_actions"
 T_AN_WHITELIST   = "nana_antinuke_whitelist"
 T_AN_LOGS        = "nana_antinuke_logs"
 T_BLACKLIST      = "nana_blacklist"
+T_AUTOMOD        = "nana_automod"
+T_GIVEAWAYS      = "nana_giveaways"
+T_GW_TEMPLATES   = "nana_gw_templates"
 
 # ── Resource lifecycle ───────────────────────────────────────────────────────
 
@@ -79,7 +82,8 @@ async def init_db() -> None:
     names = [T_GUILD_CONFIGS, T_PREMIUM_USERS, T_PREMIUM_ACT, T_GUILD_ASSETS,
              T_EMBEDS, T_EMBED_INV, T_ARS, T_AR_INV, T_AR_COOLDOWNS,
              T_BUTTONS, T_BUTTON_INV, T_WARNINGS, T_MOD_ACTIONS,
-             T_AN_WHITELIST, T_AN_LOGS, T_BLACKLIST]
+             T_AN_WHITELIST, T_AN_LOGS, T_BLACKLIST,
+             T_AUTOMOD, T_GIVEAWAYS, T_GW_TEMPLATES]
     for n in names:
         _tables[n] = await _dyn.Table(n)
 
@@ -344,6 +348,37 @@ async def get_mod_actions(guild_id: int, limit: int = 20) -> list[dict]:
         if "created_at" in it:
             it["created_at"] = int(it["created_at"]) // 1000
     return items
+
+
+async def get_user_mod_actions(guild_id: int, user_id: int, limit: int = 200) -> list[dict]:
+    """All mod actions where user_id is the target. Newest first.
+
+    Walks pages until either the row cap (limit) or a hard scan budget is hit.
+    The mod-actions table has no GSI on target_id, so we filter post-fetch.
+    """
+    items: list[dict] = []
+    last_key = None
+    fetched = 0
+    while fetched < 1000:  # safety budget
+        kw: dict[str, Any] = dict(
+            KeyConditionExpression=Key("guild_id").eq(guild_id),
+            ScanIndexForward=False,
+            FilterExpression=Key("target_id").eq(user_id),
+            Limit=200,
+        )
+        if last_key:
+            kw["ExclusiveStartKey"] = last_key
+        resp = await _t(T_MOD_ACTIONS).query(**kw)
+        page = _decode(resp.get("Items", []))
+        for it in page:
+            if "created_at" in it:
+                it["created_at"] = int(it["created_at"]) // 1000
+        items.extend(page)
+        fetched += int(resp.get("ScannedCount", 0))
+        last_key = resp.get("LastEvaluatedKey")
+        if not last_key or len(items) >= limit:
+            break
+    return items[:limit]
 
 
 # =============================================================================
@@ -1002,3 +1037,212 @@ async def reset_guild_emojis(guild_id: int) -> None:
         UpdateExpression="REMOVE emojis SET updated_at = :u",
         ExpressionAttributeValues={":u": int(time.time())},
     )
+
+
+# =============================================================================
+# Automod  (HASH guild_id, RANGE preset)
+# =============================================================================
+
+_AUTOMOD_PRESETS = {"keyword", "spam", "invite", "link", "caps", "mention_spam"}
+
+
+async def get_automod_config(guild_id: int, preset: str) -> Optional[dict]:
+    if preset not in _AUTOMOD_PRESETS:
+        raise ValueError(f"Unknown automod preset: {preset}")
+    resp = await _t(T_AUTOMOD).get_item(Key={"guild_id": guild_id, "preset": preset})
+    return _decode(resp.get("Item"))
+
+
+async def get_all_automod_configs(guild_id: int) -> list[dict]:
+    resp = await _t(T_AUTOMOD).query(KeyConditionExpression=Key("guild_id").eq(guild_id))
+    items = _decode(resp.get("Items", []))
+    items.sort(key=lambda r: r.get("preset", ""))
+    return items
+
+
+async def upsert_automod_config(
+    guild_id: int,
+    preset: str,
+    *,
+    rule_id: Optional[int] = None,
+    enabled: Optional[bool] = None,
+    keywords: Optional[list[str]] = None,
+    mention_limit: Optional[int] = None,
+    timeout_seconds: Optional[int] = None,
+    block_message: Optional[bool] = None,
+    log_channel_id: Optional[int] = None,
+    exempt_roles: Optional[list[int]] = None,
+    exempt_channels: Optional[list[int]] = None,
+) -> None:
+    if preset not in _AUTOMOD_PRESETS:
+        raise ValueError(f"Unknown automod preset: {preset}")
+    fields: dict[str, Any] = {"updated_at": int(time.time())}
+    if rule_id is not None:           fields["rule_id"] = int(rule_id)
+    if enabled is not None:           fields["enabled"] = int(bool(enabled))
+    if keywords is not None:          fields["keywords"] = list(keywords)
+    if mention_limit is not None:     fields["mention_limit"] = int(mention_limit)
+    if timeout_seconds is not None:   fields["timeout_seconds"] = int(timeout_seconds)
+    if block_message is not None:     fields["block_message"] = int(bool(block_message))
+    if log_channel_id is not None:    fields["log_channel_id"] = int(log_channel_id)
+    if exempt_roles is not None:      fields["exempt_roles"] = [int(r) for r in exempt_roles]
+    if exempt_channels is not None:   fields["exempt_channels"] = [int(c) for c in exempt_channels]
+    expr, names, values = _build_update(fields)
+    await _t(T_AUTOMOD).update_item(
+        Key={"guild_id": guild_id, "preset": preset},
+        UpdateExpression=expr,
+        ExpressionAttributeNames=names,
+        ExpressionAttributeValues=values,
+    )
+
+
+async def delete_automod_config(guild_id: int, preset: str) -> Optional[dict]:
+    resp = await _t(T_AUTOMOD).delete_item(
+        Key={"guild_id": guild_id, "preset": preset},
+        ReturnValues="ALL_OLD",
+    )
+    return _decode(resp.get("Attributes"))
+
+
+# =============================================================================
+# Giveaways  (HASH guild_id, RANGE message_id)
+# =============================================================================
+
+async def create_giveaway(guild_id: int, message_id: int, **fields: Any) -> dict:
+    fields = dict(fields)
+    fields.setdefault("ended", 0)
+    fields.setdefault("paused", 0)
+    fields.setdefault("created_at", int(time.time()))
+    item = _clean({"guild_id": guild_id, "message_id": message_id, **fields})
+    await _t(T_GIVEAWAYS).put_item(Item=item)
+    return _decode(item)
+
+
+async def get_giveaway(guild_id: int, message_id: int) -> Optional[dict]:
+    resp = await _t(T_GIVEAWAYS).get_item(
+        Key={"guild_id": guild_id, "message_id": message_id}
+    )
+    return _decode(resp.get("Item"))
+
+
+async def update_giveaway(guild_id: int, message_id: int, **fields: Any) -> None:
+    if not fields:
+        return
+    expr, names, values = _build_update(dict(fields))
+    await _t(T_GIVEAWAYS).update_item(
+        Key={"guild_id": guild_id, "message_id": message_id},
+        UpdateExpression=expr,
+        ExpressionAttributeNames=names,
+        ExpressionAttributeValues=values,
+    )
+
+
+async def list_giveaways(guild_id: int, only_active: bool = False) -> list[dict]:
+    kw: dict[str, Any] = dict(KeyConditionExpression=Key("guild_id").eq(guild_id))
+    if only_active:
+        kw["FilterExpression"] = Key("ended").eq(0)
+    resp = await _t(T_GIVEAWAYS).query(**kw)
+    items = _decode(resp.get("Items", []))
+    items.sort(key=lambda r: -int(r.get("created_at", 0)))
+    return items
+
+
+async def count_active_giveaways(guild_id: int) -> int:
+    items = await list_giveaways(guild_id, only_active=True)
+    return len(items)
+
+
+async def scan_active_giveaways() -> list[dict]:
+    """Cross-guild scan for the background ticker. Pages through results."""
+    items: list[dict] = []
+    last_key = None
+    while True:
+        kw: dict[str, Any] = dict(FilterExpression=Key("ended").eq(0))
+        if last_key:
+            kw["ExclusiveStartKey"] = last_key
+        resp = await _t(T_GIVEAWAYS).scan(**kw)
+        items.extend(_decode(resp.get("Items", [])))
+        last_key = resp.get("LastEvaluatedKey")
+        if not last_key:
+            break
+    return items
+
+
+async def toggle_giveaway_entry(
+    guild_id: int, message_id: int, user_id: int
+) -> tuple[Optional[str], int]:
+    """Toggle a user's giveaway entry. Returns ('joined'|'left'|None, new_total).
+
+    Returns (None, current_total) if the giveaway is missing, ended, or paused.
+    The returned count comes from the DynamoDB response (UPDATED_NEW) so it
+    reflects concurrent toggles correctly.
+    """
+    gw = await get_giveaway(guild_id, message_id)
+    if not gw or int(gw.get("ended", 0)) or int(gw.get("paused", 0)):
+        entries = gw.get("entries", []) if gw else []
+        return None, len(entries) if entries else 0
+    entries = {int(x) for x in (gw.get("entries", []) or [])}
+    is_member = user_id in entries
+    expr = "DELETE entries :u" if is_member else "ADD entries :u"
+    resp = await _t(T_GIVEAWAYS).update_item(
+        Key={"guild_id": guild_id, "message_id": message_id},
+        UpdateExpression=expr,
+        ExpressionAttributeValues={":u": {Decimal(user_id)}},
+        ReturnValues="UPDATED_NEW",
+    )
+    new_entries = resp.get("Attributes", {}).get("entries") or set()
+    return ("left" if is_member else "joined"), len(new_entries)
+
+
+async def delete_giveaway(guild_id: int, message_id: int) -> bool:
+    resp = await _t(T_GIVEAWAYS).delete_item(
+        Key={"guild_id": guild_id, "message_id": message_id},
+        ReturnValues="ALL_OLD",
+    )
+    return "Attributes" in resp
+
+
+# =============================================================================
+# Giveaway templates  (HASH guild_id, RANGE name)
+# =============================================================================
+
+async def save_gw_template(guild_id: int, name: str, data: dict) -> None:
+    name_l = name.lower()
+    await _t(T_GW_TEMPLATES).put_item(Item={
+        "guild_id": guild_id,
+        "name": name_l,
+        "data": _encode(data),
+        "created_at": int(time.time()),
+    })
+
+
+async def get_gw_template(guild_id: int, name: str) -> Optional[dict]:
+    resp = await _t(T_GW_TEMPLATES).get_item(
+        Key={"guild_id": guild_id, "name": name.lower()}
+    )
+    item = resp.get("Item")
+    return _decode(item.get("data")) if item else None
+
+
+async def list_gw_templates(guild_id: int) -> list[dict]:
+    resp = await _t(T_GW_TEMPLATES).query(
+        KeyConditionExpression=Key("guild_id").eq(guild_id)
+    )
+    items = _decode(resp.get("Items", []))
+    items.sort(key=lambda r: r.get("name", ""))
+    return items
+
+
+async def delete_gw_template(guild_id: int, name: str) -> bool:
+    resp = await _t(T_GW_TEMPLATES).delete_item(
+        Key={"guild_id": guild_id, "name": name.lower()},
+        ReturnValues="ALL_OLD",
+    )
+    return "Attributes" in resp
+
+
+async def count_gw_templates(guild_id: int) -> int:
+    resp = await _t(T_GW_TEMPLATES).query(
+        KeyConditionExpression=Key("guild_id").eq(guild_id),
+        Select="COUNT",
+    )
+    return int(resp.get("Count", 0))

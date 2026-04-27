@@ -19,6 +19,7 @@ from utils.helpers import parse_duration, format_duration, can_act_on, send_dm
 from utils.database import (
     add_warning, get_warnings, clear_warnings,
     log_mod_action, get_guild_config, upsert_guild_config,
+    get_user_mod_actions,
 )
 
 PER_PAGE = 5
@@ -295,11 +296,20 @@ class Moderation(commands.Cog):
             return await interaction.response.send_message(
                 embed=self.ef.error("This command can only be used in text channels."), ephemeral=False
             )
-        await interaction.response.defer(ephemeral=False)
-        check   = (lambda m: m.author == user) if user else None
-        deleted = await interaction.channel.purge(limit=amount, check=check, bulk=True)
+        await interaction.response.defer(ephemeral=True)
+        check = (lambda m: m.author.id == user.id) if user else (lambda m: True)
+        try:
+            deleted = await interaction.channel.purge(limit=amount, check=check, bulk=True)
+        except discord.HTTPException as e:
+            return await interaction.followup.send(
+                embed=self.ef.error(f"Couldn't purge: {e.text or e}"), ephemeral=True
+            )
         await interaction.followup.send(
-            embed=self.ef.success(f"Deleted **{len(deleted)}** message(s)."), ephemeral=False
+            embed=self.ef.success(
+                f"Deleted **{len(deleted)}** message(s)"
+                + (f" from {user.mention}." if user else ".")
+            ),
+            ephemeral=True,
         )
 
     # ── jail ─────────────────────────────────────────────────────
@@ -539,204 +549,114 @@ class Moderation(commands.Cog):
             embed=self.ef.success(f"Channel refreshed by {interaction.user.mention}.")
         )
 
-    # ── automod ───────────────────────────────────────────────────
+    # ── /mod history ──────────────────────────────────────────────
 
-    automod_group = app_commands.Group(
-        name="automod",
-        description="Configure Discord's built-in AutoMod.",
-        default_permissions=discord.Permissions(manage_guild=True),
+    mod_group = app_commands.Group(
+        name="mod",
+        description="Moderator utilities (history lookup, etc.).",
+        default_permissions=discord.Permissions(moderate_members=True),
     )
 
-    @automod_group.command(name="list", description="List all active AutoMod rules in this server.")
-    async def automod_list(self, interaction: discord.Interaction):
+    @mod_group.command(name="history", description="Combined moderation history for a member.")
+    @app_commands.describe(user="The member to look up.")
+    @app_commands.checks.cooldown(1, 5)
+    async def mod_history(self, interaction: discord.Interaction, user: discord.User):
         assert interaction.guild
         await interaction.response.defer(ephemeral=False)
-        try:
-            rules = await interaction.guild.fetch_automod_rules()
-        except discord.Forbidden:
-            return await interaction.followup.send(embed=self.ef.error("Missing permission to view AutoMod rules."))
-        if not rules:
-            return await interaction.followup.send(embed=self.ef.info("No AutoMod rules configured."))
-        e = self.ef.build(author_name="AutoMod Rules", color_key="accent")
-        for rule in rules:
-            status = self.ef.e["enabled"] if rule.enabled else self.ef.e["disabled"]
-            e.add_field(
-                name  = f"`{rule.name}`",
-                value = f"{status} · ID: `{rule.id}`\nTrigger: `{rule.trigger.type.name}`",
-                inline=False,
-            )
-        await interaction.followup.send(embed=e)
 
-    @automod_group.command(name="spam", description="Enable or disable Discord's built-in spam detection.")
-    @app_commands.describe(enable="True to enable, False to disable.")
-    async def automod_spam(self, interaction: discord.Interaction, enable: bool):
-        assert interaction.guild
-        await interaction.response.defer(ephemeral=False)
-        try:
-            rules = await interaction.guild.fetch_automod_rules()
-            existing = next((r for r in rules if r.trigger.type == discord.AutoModRuleTriggerType.spam), None)
-            if existing:
-                await existing.edit(enabled=enable)
-                action = "enabled" if enable else "disabled"
-                return await interaction.followup.send(embed=self.ef.success(f"Spam filter **{action}**."))
-            if not enable:
-                return await interaction.followup.send(embed=self.ef.info("No spam filter rule exists to disable."))
-            await interaction.guild.create_automod_rule(
-                name    = "Nana — Spam Filter",
-                event_type = discord.AutoModRuleEventType.message_send,
-                trigger = discord.AutoModTrigger(type=discord.AutoModRuleTriggerType.spam),
-                actions = [discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message)],
-                enabled = True,
-                reason  = f"Spam automod set up by {interaction.user}",
-            )
-            await interaction.followup.send(embed=self.ef.success("Spam filter **enabled**."))
-        except discord.Forbidden:
-            await interaction.followup.send(embed=self.ef.error("Missing permission to manage AutoMod rules."))
-        except discord.HTTPException as e:
-            await interaction.followup.send(embed=self.ef.error(f"Failed: {e}"))
+        warnings_raw = await get_warnings(interaction.guild.id, user.id)
+        actions_raw  = await get_user_mod_actions(interaction.guild.id, user.id, limit=200)
 
-    @automod_group.command(name="invites", description="Block Discord invite links automatically.")
-    @app_commands.describe(enable="True to enable, False to disable.")
-    async def automod_invites(self, interaction: discord.Interaction, enable: bool):
-        assert interaction.guild
-        await interaction.response.defer(ephemeral=False)
-        try:
-            rules    = await interaction.guild.fetch_automod_rules()
-            existing = next(
-                (r for r in rules
-                 if r.trigger.type == discord.AutoModRuleTriggerType.keyword
-                 and r.name == "Nana — Block Invites"),
-                None,
-            )
-            if existing:
-                await existing.edit(enabled=enable)
-                action = "enabled" if enable else "disabled"
-                return await interaction.followup.send(embed=self.ef.success(f"Invite blocker **{action}**."))
-            if not enable:
-                return await interaction.followup.send(embed=self.ef.info("No invite blocker rule exists to disable."))
-            await interaction.guild.create_automod_rule(
-                name       = "Nana — Block Invites",
-                event_type = discord.AutoModRuleEventType.message_send,
-                trigger    = discord.AutoModTrigger(
-                    type=discord.AutoModRuleTriggerType.keyword,
-                    keyword_filter=["discord.gg/*", "discord.com/invite/*", "discordapp.com/invite/*"],
-                ),
-                actions    = [discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message)],
-                enabled    = True,
-                reason     = f"Invite blocker set up by {interaction.user}",
-            )
-            await interaction.followup.send(embed=self.ef.success("Invite blocker **enabled**."))
-        except discord.Forbidden:
-            await interaction.followup.send(embed=self.ef.error("Missing permission to manage AutoMod rules."))
-        except discord.HTTPException as e:
-            await interaction.followup.send(embed=self.ef.error(f"Failed: {e}"))
+        # Merge into a single newest-first timeline.
+        events: list[dict] = []
+        for w in warnings_raw:
+            events.append({
+                "ts": int(w.get("created_at", 0)),
+                "kind": "warn",
+                "moderator_id": int(w.get("moderator_id", 0)),
+                "reason": w.get("reason") or "No reason given",
+                "duration": None,
+            })
+        for a in actions_raw:
+            events.append({
+                "ts": int(a.get("created_at", 0)),
+                "kind": str(a.get("action", "action")),
+                "moderator_id": int(a.get("moderator_id", 0)),
+                "reason": a.get("reason") or "No reason given",
+                "duration": a.get("duration"),
+            })
+        events.sort(key=lambda e: -e["ts"])
 
-    @automod_group.command(name="keywords", description="Block custom keywords automatically.")
-    @app_commands.describe(words="Space-separated list of words or phrases to block.", enable="True to enable, False to disable.")
-    async def automod_keywords(self, interaction: discord.Interaction, words: str, enable: bool = True):
-        assert interaction.guild
-        await interaction.response.defer(ephemeral=False)
-        keyword_list = [w.strip() for w in words.split() if w.strip()]
-        if not keyword_list:
-            return await interaction.followup.send(embed=self.ef.error("Please provide at least one keyword."))
-        try:
-            rules    = await interaction.guild.fetch_automod_rules()
-            existing = next(
-                (r for r in rules
-                 if r.trigger.type == discord.AutoModRuleTriggerType.keyword
-                 and r.name == "Nana — Keyword Filter"),
-                None,
+        if not events:
+            return await interaction.followup.send(embed=self.ef.info(
+                f"No moderation history for {user.mention}."
+            ))
+
+        # Tally by kind for the header.
+        tally: dict[str, int] = {}
+        for ev in events:
+            tally[ev["kind"]] = tally.get(ev["kind"], 0) + 1
+        tally_parts = " · ".join(f"`{k}` {v}" for k, v in sorted(tally.items()))
+
+        # Paginate (5 per page).
+        per_page = 5
+        pages: list[discord.Embed] = []
+        total = len(events)
+        for i in range(0, total, per_page):
+            chunk = events[i:i + per_page]
+            e = self.ef.build(
+                title=f"Mod history — {user}",
+                description=f"**Total:** {total}  ·  {tally_parts}",
+                color_key="error",
             )
-            if existing:
-                current = existing.trigger.keyword_filter or []
-                merged  = list(set(current) | set(keyword_list))
-                await existing.edit(
-                    enabled = enable,
-                    trigger = discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.keyword,
-                        keyword_filter=merged,
-                    ),
+            e.set_thumbnail(url=user.display_avatar.url)
+            for ev in chunk:
+                head = f"**{ev['kind'].upper()}**  ·  <t:{ev['ts']}:R>"
+                if ev["duration"]:
+                    head += f"  ·  duration `{int(ev['duration'])}s`"
+                body = (
+                    f"by <@{ev['moderator_id']}>\n"
+                    f"{ev['reason'][:300]}"
                 )
-                return await interaction.followup.send(
-                    embed=self.ef.success(
-                        f"Keyword filter updated with `{len(keyword_list)}` new word(s).\n"
-                        f"Total blocked: **{len(merged)}** keywords."
+                e.add_field(name=head, value=body, inline=False)
+            e.set_footer(text=f"Page {i // per_page + 1} / {-(-total // per_page)}")
+            pages.append(e)
+
+        if len(pages) == 1:
+            return await interaction.followup.send(embed=pages[0])
+
+        # Simple pagination view, identical pattern to /warnings.
+        class _Pager(discord.ui.View):
+            def __init__(self, pages_: list[discord.Embed], owner_id: int):
+                super().__init__(timeout=120)
+                self.pages = pages_
+                self.idx = 0
+                self.owner_id = owner_id
+
+            async def interaction_check(self, itx: discord.Interaction) -> bool:
+                if itx.user.id != self.owner_id:
+                    await itx.response.send_message(
+                        "Only the original requester can page through this.",
+                        ephemeral=True,
                     )
-                )
-            await interaction.guild.create_automod_rule(
-                name       = "Nana — Keyword Filter",
-                event_type = discord.AutoModRuleEventType.message_send,
-                trigger    = discord.AutoModTrigger(
-                    type=discord.AutoModRuleTriggerType.keyword,
-                    keyword_filter=keyword_list,
-                ),
-                actions    = [discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message)],
-                enabled    = enable,
-                reason     = f"Keyword filter set up by {interaction.user}",
-            )
-            await interaction.followup.send(
-                embed=self.ef.success(f"Keyword filter created with **{len(keyword_list)}** word(s).")
-            )
-        except discord.Forbidden:
-            await interaction.followup.send(embed=self.ef.error("Missing permission to manage AutoMod rules."))
-        except discord.HTTPException as e:
-            await interaction.followup.send(embed=self.ef.error(f"Failed: {e}"))
+                    return False
+                return True
 
-    @automod_group.command(name="mentions", description="Block messages with too many mentions.")
-    @app_commands.describe(limit="Max allowed mentions per message (2-50).")
-    async def automod_mentions(self, interaction: discord.Interaction,
-                                limit: app_commands.Range[int, 2, 50] = 5):
-        assert interaction.guild
-        await interaction.response.defer(ephemeral=False)
-        try:
-            rules    = await interaction.guild.fetch_automod_rules()
-            existing = next(
-                (r for r in rules if r.trigger.type == discord.AutoModRuleTriggerType.mention_spam),
-                None,
-            )
-            if existing:
-                await existing.edit(
-                    enabled = True,
-                    trigger = discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.mention_spam,
-                        mention_total_limit=limit,
-                    ),
-                )
-                return await interaction.followup.send(
-                    embed=self.ef.success(f"Mention spam filter updated — max **{limit}** mentions per message.")
-                )
-            await interaction.guild.create_automod_rule(
-                name       = "Nana — Mention Spam",
-                event_type = discord.AutoModRuleEventType.message_send,
-                trigger    = discord.AutoModTrigger(
-                    type=discord.AutoModRuleTriggerType.mention_spam,
-                    mention_total_limit=limit,
-                ),
-                actions    = [discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message)],
-                enabled    = True,
-                reason     = f"Mention spam filter set up by {interaction.user}",
-            )
-            await interaction.followup.send(
-                embed=self.ef.success(f"Mention spam filter enabled — max **{limit}** mentions per message.")
-            )
-        except discord.Forbidden:
-            await interaction.followup.send(embed=self.ef.error("Missing permission to manage AutoMod rules."))
-        except discord.HTTPException as e:
-            await interaction.followup.send(embed=self.ef.error(f"Failed: {e}"))
+            async def _refresh(self, itx: discord.Interaction):
+                await itx.response.edit_message(embed=self.pages[self.idx], view=self)
 
-    @automod_group.command(name="disable", description="Disable an AutoMod rule by its ID.")
-    @app_commands.describe(rule_id="Rule ID from /automod list.")
-    async def automod_disable(self, interaction: discord.Interaction, rule_id: str):
-        assert interaction.guild
-        await interaction.response.defer(ephemeral=False)
-        try:
-            rule = await interaction.guild.fetch_automod_rule(int(rule_id))
-            await rule.edit(enabled=False)
-            await interaction.followup.send(embed=self.ef.success(f"Rule `{rule.name}` disabled."))
-        except (ValueError, discord.NotFound):
-            await interaction.followup.send(embed=self.ef.error("Rule not found. Use `/automod list` to get IDs."))
-        except discord.Forbidden:
-            await interaction.followup.send(embed=self.ef.error("Missing permission to manage AutoMod rules."))
+            @discord.ui.button(label="◀", style=discord.ButtonStyle.secondary)
+            async def prev(self, itx: discord.Interaction, _: discord.ui.Button):
+                self.idx = (self.idx - 1) % len(self.pages)
+                await self._refresh(itx)
+
+            @discord.ui.button(label="▶", style=discord.ButtonStyle.secondary)
+            async def nxt(self, itx: discord.Interaction, _: discord.ui.Button):
+                self.idx = (self.idx + 1) % len(self.pages)
+                await self._refresh(itx)
+
+        view = _Pager(pages, interaction.user.id)
+        await interaction.followup.send(embed=pages[0], view=view)
 
     # ── steal emojis ──────────────────────────────────────────────
 

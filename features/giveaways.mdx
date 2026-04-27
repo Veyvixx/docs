@@ -1,0 +1,145 @@
+---
+title: "Giveaways"
+icon: "gift"
+description: "Run fully-featured giveaways with role requirements, bonus entries, templates, and more."
+---
+
+Nana's giveaway system lets you host giveaways with a single command. Members join by clicking a button, Nana picks winners automatically when time's up, and everything persists across bot restarts.
+
+## Starting a Giveaway
+
+```
+/gw start <prize> <duration>
+```
+
+At minimum you need a prize and a duration. Everything else is optional.
+
+| Option | Description |
+|---|---|
+| `prize` | What members can win |
+| `duration` | How long to run — e.g. `30m`, `2h`, `1d` |
+| `winners` | Number of winners to pick (default: 1, max: 50) |
+| `channel` | Channel to post in (defaults to current) |
+| `host` | Show a different user as the host |
+| `ping_role` | Role to ping in the announcement |
+| `image` | Image URL to display on the giveaway embed |
+| `description` | Extra details shown on the embed |
+| `button_label` | Override the default "Join" button label |
+| `button_emoji` | Override the default 🎉 emoji on the button |
+| `template` | Load defaults from a saved template (any option can still be overridden) |
+
+<Info>
+  The minimum duration is **30 seconds**. Giveaways survive bot restarts — active ones are resumed automatically.
+</Info>
+
+### Premium Options ✨
+
+These options require Nana Premium:
+
+| Option | Description |
+|---|---|
+| `required_roles` | Comma-separated role mentions — members must have at least one to enter |
+| `blacklisted_roles` | Comma-separated role mentions — members with these roles cannot enter |
+| `bonus_roles` | Role + extra entries, e.g. `@VIP:3,@Booster:2` — VIPs get 3 entries, Boosters get 2 |
+| `min_account_age` | Minimum Discord account age (e.g. `7d`) to enter |
+| `min_join_age` | Minimum server tenure (e.g. `1d`) to enter |
+
+## Managing Giveaways
+
+Once a giveaway is running, use its **message ID** to manage it. You can find the message ID by right-clicking the giveaway post in Discord.
+
+<AccordionGroup>
+  <Accordion title="/gw end — End early" icon="stop">
+    Ends the giveaway immediately and picks winners from current entries.
+
+    ```
+    /gw end <message_id>
+    ```
+  </Accordion>
+  <Accordion title="/gw reroll — Pick new winners" icon="rotate">
+    Picks new winners from existing entries on a finished giveaway. Useful if a winner is unavailable.
+
+    ```
+    /gw reroll <message_id> [winners]
+    ```
+
+    The `winners` option lets you pick a different number of winners than the original.
+  </Accordion>
+  <Accordion title="/gw cancel — Cancel without picking" icon="xmark">
+    Cancels the giveaway and marks it as cancelled on the embed. No winners are picked.
+
+    ```
+    /gw cancel <message_id>
+    ```
+  </Accordion>
+  <Accordion title="/gw pause — Pause the countdown" icon="pause">
+    Pauses the giveaway. Entries are closed while paused and the countdown freezes.
+
+    ```
+    /gw pause <message_id>
+    ```
+  </Accordion>
+  <Accordion title="/gw resume — Resume the countdown" icon="play">
+    Resumes a paused giveaway. The timer picks up from where it left off.
+
+    ```
+    /gw resume <message_id>
+    ```
+  </Accordion>
+  <Accordion title="/gw edit — Edit a running giveaway" icon="pen">
+    Edits fields on an active giveaway. The embed is updated immediately.
+
+    ```
+    /gw edit <message_id>
+    ```
+
+    | Option | Description |
+    |---|---|
+    | `prize` | New prize text |
+    | `winners` | New winner count |
+    | `add_time` | Add or subtract time — e.g. `30m` or `-1h` |
+    | `image` | New image URL (use `none` to remove) |
+    | `description` | New description (use `none` to remove) |
+  </Accordion>
+  <Accordion title="/gw list — View active giveaways" icon="list">
+    Lists all currently active giveaways in the server, including entry counts and end times.
+
+    ```
+    /gw list
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Templates (Premium)
+
+Save a set of default options as a named template and reuse them across any giveaway.
+
+| Command | Description |
+|---|---|
+| `/gw template save <name>` | Save a template with default options |
+| `/gw template load <name>` | View a saved template |
+| `/gw template list` | List all saved templates |
+| `/gw template delete <name>` | Remove a template |
+
+Use a template when starting a giveaway:
+```
+/gw start template:weekly-nitro
+```
+
+Any option you specify directly will override the template's defaults.
+
+<Info>
+  Templates can store up to **25 presets** per server. Template saving requires **Nana Premium**.
+</Info>
+
+## Free vs. Premium
+
+| Feature | Free | Premium |
+|---|---|---|
+| Concurrent giveaways | 2 | Unlimited |
+| Required / blacklisted roles | — | ✓ |
+| Bonus entries by role | — | ✓ |
+| Minimum account / join age | — | ✓ |
+| Giveaway templates | — | Up to 25 |
+
+**Required permissions:** Manage Guild

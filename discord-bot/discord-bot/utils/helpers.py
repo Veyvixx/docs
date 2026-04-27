@@ -262,6 +262,9 @@ def format_variables(
             "server.offline":       str(offline),
             "server.verification":  str(guild.verification_level).replace("_", " ").title(),
             "server.tier":          str(boost_tier),
+            "server.boostlevel":    str(boost_tier),
+            "member.count":         str(count),
+            "member.count.ordinal": ordinal(count),
             "server.afkchannel":    afk_ch,
             "server.afktimeout":    f"{afk_timeout}m",
             "server.ruleschannel":  rules_ch,
@@ -287,20 +290,26 @@ def format_variables(
 
     unix_ts = int(now.timestamp())
     replacements.update({
-        "date":        now.strftime("%Y-%m-%d"),
-        "time":        now.strftime("%H:%M UTC"),
-        "timestamp":   str(unix_ts),
-        "unix":        str(unix_ts),
-        "date.day":    str(now.day),
-        "date.month":  str(now.month),
-        "date.year":   str(now.year),
-        "time.hour":   str(now.hour),
-        "time.minute": str(now.minute),
-        "newline":     "\n",
-        "nl":          "\n",
-        "tab":         "\t",
-        "space":       " ",
-        "empty":       "\u200b",
+        "date":         now.strftime("%Y-%m-%d"),
+        "time":         now.strftime("%H:%M UTC"),
+        "timestamp":    str(unix_ts),
+        "timestamp:r":  f"<t:{unix_ts}:R>",
+        "timestamp:f":  f"<t:{unix_ts}:F>",
+        "timestamp:t":  f"<t:{unix_ts}:T>",
+        "timestamp:d":  f"<t:{unix_ts}:D>",
+        "unix":         str(unix_ts),
+        "date.day":     str(now.day),
+        "date.month":   str(now.month),
+        "date.year":    str(now.year),
+        "time.hour":    str(now.hour),
+        "time.minute":  str(now.minute),
+        "newline":      "\n",
+        "nl":           "\n",
+        "tab":          "\t",
+        "space":        " ",
+        "empty":        "\u200b",
+        # Best-effort: invite tracking is not enabled. Resolves to "Unknown".
+        "inviter":      "Unknown",
     })
 
     def handle_special(match: re.Match) -> Optional[str]:
@@ -534,8 +543,12 @@ VARIABLE_REFERENCE = (
     "`{channel.id}` · `{channel.topic}` · `{channel.created}`\n\n"
     "**Date & Time**\n"
     "`{date}` · `{time}` · `{ordinal}` · `{timestamp}`\n"
+    "`{timestamp:R}` · `{timestamp:F}` · `{timestamp:T}` · `{timestamp:D}`\n"
     "`{date.day}` · `{date.month}` · `{date.year}`\n"
     "`{time.hour}` · `{time.minute}`\n\n"
+    "**Member Count Aliases**\n"
+    "`{member.count}` · `{member.count.ordinal}` · `{server.boostlevel}`\n"
+    "`{inviter}` *(best-effort, `Unknown` until invite tracking is enabled)*\n\n"
     "**Formatting**\n"
     "`{newline}` / `{nl}` — line break\n\n"
     "**Random**\n"

@@ -42,13 +42,38 @@ All commands use Discord's slash command system. Start with `/` and select the c
 | `/warnings <user>` | View paginated warning history | Moderate Members |
 | `/clearwarnings <user>` | Clear all warnings for a member | Moderate Members |
 | `/purge <amount>` | Bulk delete up to 100 messages | Manage Messages |
-| `/automod spam` | Enable/disable spam filter | Manage Guild |
-| `/automod invites` | Block Discord invites | Manage Guild |
-| `/automod keywords` | Block custom keywords | Manage Guild |
-| `/automod mentions` | Limit mass mentions | Manage Guild |
-| `/automod list` | View all AutoMod rules | Manage Guild |
-| `/automod disable` | Disable a rule by ID | Manage Guild |
+| `/mod history <user>` | Full paginated moderation timeline for a member | Moderate Members |
 | `/steal <emojis> [count]` | Copy custom emojis from other servers | Manage Expressions |
+| `/automod enable <preset>` | Enable a built-in AutoMod preset | Manage Guild |
+| `/automod disable <preset>` | Disable a preset (run again to delete) | Manage Guild |
+| `/automod list` | View status of every AutoMod preset | Manage Guild |
+| `/automod action set <preset>` | Set timeout / log channel for a preset | Manage Guild |
+| `/automod whitelist add_role` | Exempt a role from a preset | Manage Guild |
+| `/automod whitelist remove_role` | Remove a role exemption | Manage Guild |
+| `/automod whitelist add_channel` | Exempt a channel from a preset | Manage Guild |
+| `/automod whitelist remove_channel` | Remove a channel exemption | Manage Guild |
+| `/automod keyword add <word>` | Add a word to the keyword filter | Manage Guild |
+| `/automod keyword remove <word>` | Remove a word from the keyword filter | Manage Guild |
+| `/automod keyword list` | View blocked keywords | Manage Guild |
+| `/automod keyword clear` | Wipe the entire keyword list | Manage Guild |
+| `/automod mentions <limit>` | Set the mention-spam trigger limit | Manage Guild |
+
+## Giveaways
+
+| Command | Description | Permission |
+|---|---|---|
+| `/gw start <prize> <duration>` | Start a new giveaway | Manage Guild |
+| `/gw end <message_id>` | End a giveaway early | Manage Guild |
+| `/gw reroll <message_id>` | Pick new winners on a finished giveaway | Manage Guild |
+| `/gw cancel <message_id>` | Cancel without picking winners | Manage Guild |
+| `/gw list` | List active giveaways | Manage Guild |
+| `/gw pause <message_id>` | Pause the countdown | Manage Guild |
+| `/gw resume <message_id>` | Resume a paused giveaway | Manage Guild |
+| `/gw edit <message_id>` | Edit prize / winners / duration / image | Manage Guild |
+| `/gw template save <name>` | Save a giveaway template ✨ | Manage Guild |
+| `/gw template load <name>` | View a saved template ✨ | Manage Guild |
+| `/gw template list` | List saved templates ✨ | Manage Guild |
+| `/gw template delete <name>` | Delete a saved template ✨ | Manage Guild |
 
 ## Anti-Nuke
 

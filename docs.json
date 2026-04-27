@@ -36,7 +36,8 @@
               "features/autoresponders",
               "features/buttons",
               "features/customization",
-              "features/event-logging"
+              "features/event-logging",
+              "features/giveaways"
             ]
           },
           {

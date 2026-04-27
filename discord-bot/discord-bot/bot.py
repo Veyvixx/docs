@@ -63,6 +63,7 @@ class DiscordBot(commands.Bot):
             "cogs.customization", "cogs.developer", "cogs.events",
             "cogs.autoresponder", "cogs.buttons_cog",
             "cogs.premium_activate",
+            "cogs.automod", "cogs.giveaways",
         ]
         for cog in cogs:
             try:
